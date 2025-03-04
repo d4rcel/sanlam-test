@@ -1,0 +1,14 @@
+// TODO : Intégrer le template
+// TODO : Configurer la page de connexion
+// TODO : Ajouter une page d'inscription
+// TODO : Afficher le tableau de bord après connexion ou inscription
+
+_______________________________________________________________________________________________________________
+
+Livrables : 
+- le dossier compressé du code source (supprimez le répertoire node_modules avant de compresser le code )
+- une documentation sur l'architecture du code adopté ( uniquement dans le cadre des tâches à réaliser ci-dessus )
+
+NB : Les fonctionnalités sont à développer uniquement avec du Frontend et pensez à valider les formulaires.
+
+Bonne chance !!
