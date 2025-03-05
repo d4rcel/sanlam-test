@@ -5,6 +5,27 @@ import type { RouteRecordRaw } from 'vue-router/auto'
 
 import { createRouter, createWebHistory } from 'vue-router/auto'
 
+const routes: RouteRecordRaw[] = [
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('@/pages/login.vue'),
+    meta: { layout: 'blank', public: true }
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: () => import('@/pages/register.vue'),
+    meta: { layout: 'blank', public: true }
+  },
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: () => import('@/pages/dashboard.vue'),
+    meta: { requiresAuth: true }
+  }
+]
+
 function recursiveLayouts(route: RouteRecordRaw): RouteRecordRaw {
   if (route.children) {
     for (let i = 0; i < route.children.length; i++)
@@ -25,8 +46,21 @@ const router = createRouter({
     return { top: 0 }
   },
   extendRoutes: pages => [
+    // ...routes.map(route => recursiveLayouts(route)),
     ...[...pages].map(route => recursiveLayouts(route)),
   ],
+})
+
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = !!localStorage.getItem('authToken')
+  
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    next({ name: 'login' })
+  } else if ((to.name === 'login' || to.name === 'register') && isAuthenticated) {
+    next({ name: 'dashboard' })
+  } else {
+    next()
+  }
 })
 
 export { router }

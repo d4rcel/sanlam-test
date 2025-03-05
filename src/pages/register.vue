@@ -1,3 +1,4 @@
+<!-- views/pages/authentication/Register.vue -->
 <script setup lang="ts">
 import { useGenerateImageVariant } from '@/@core/composable/useGenerateImageVariant'
 import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
@@ -17,10 +18,12 @@ definePage({
   },
 })
 
-interface LoginForm {
+
+interface RegisterForm {
   email: string
   password: string
-  remember: boolean
+  confirmPassword: string
+  terms: boolean
 }
 
 interface ErrorResponse {
@@ -28,34 +31,29 @@ interface ErrorResponse {
   message: string
 }
 
-const form = ref<LoginForm>({
+const form = ref<RegisterForm>({
   email: '',
   password: '',
-  remember: false,
+  confirmPassword: '',
+  terms: false,
 })
 
 const errors = ref<ErrorResponse[]>([])
 const isPasswordVisible = ref(false)
+const isConfirmPasswordVisible = ref(false)
 const isLoading = ref(false)
 
 const authV2LoginMask = useGenerateImageVariant(authV2LoginMaskLight, authV2LoginMaskDark)
-const authV2LoginIllustration = useGenerateImageVariant (authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
+const authV2LoginIllustration = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
 
 const router = useRouter()
 
 const authService = {
-  async login(email: string, password: string) {
+  async register(email: string, password: string) {
     await new Promise(resolve => setTimeout(resolve, 1000))
     
-    const mockUsers = [
-      { email: 'user@example.com', password: 'Password123!' },
-      { email: 'admin@example.com', password: 'Admin456!' }
-    ]
-    
-    const user = mockUsers.find(u => u.email === email && u.password === password)
-    
-    if (!user) {
-      throw new Error('Invalid credentials')
+    if (email.includes('example.com')) {
+      throw new Error('Email already exists')
     }
     
     return { token: 'mock-jwt-token', user: { email } }
@@ -65,36 +63,48 @@ const authService = {
 const validateForm = (): boolean => {
   errors.value = []
   
+  // Email validation
   if (!form.value.email) {
     errors.value.push({ field: 'email', message: 'Email is required' })
   } else if (!/\S+@\S+\.\S+/.test(form.value.email)) {
     errors.value.push({ field: 'email', message: 'Email is invalid' })
   }
   
+  // Password validation
   if (!form.value.password) {
     errors.value.push({ field: 'password', message: 'Password is required' })
   } else if (form.value.password.length < 8) {
     errors.value.push({ field: 'password', message: 'Password must be at least 8 characters' })
+  } else if (!/[A-Z]/.test(form.value.password)) {
+    errors.value.push({ field: 'password', message: 'Password must contain at least one uppercase letter' })
+  } else if (!/[0-9]/.test(form.value.password)) {
+    errors.value.push({ field: 'password', message: 'Password must contain at least one number' })
+  }
+  
+  // Confirm password validation
+  if (!form.value.confirmPassword) {
+    errors.value.push({ field: 'confirmPassword', message: 'Password confirmation is required' })
+  } else if (form.value.password !== form.value.confirmPassword) {
+    errors.value.push({ field: 'confirmPassword', message: 'Passwords do not match' })
+  }
+  
+  // Terms validation
+  if (!form.value.terms) {
+    errors.value.push({ field: 'terms', message: 'You must accept the terms and conditions' })
   }
   
   return errors.value.length === 0
 }
 
-const login = async () => {
+const register = async () => {
   if (!validateForm()) return
   
   isLoading.value = true
   errors.value = []
   
   try {
-    const response = await authService.login(form.value.email, form.value.password)
-    
+    const response = await authService.register(form.value.email, form.value.password)
     localStorage.setItem('authToken', response.token)
-    
-    if (form.value.remember) {
-      localStorage.setItem('rememberedEmail', form.value.email)
-    }
-    
     router.push('/dashboard')
   } catch (error) {
     errors.value.push({ message: error instanceof Error ? error.message : 'An error occurred' })
@@ -102,15 +112,6 @@ const login = async () => {
     isLoading.value = false
   }
 }
-
-onMounted(() => {
-  const rememberedEmail = localStorage.getItem('rememberedEmail')
-  if (rememberedEmail) {
-    form.value.email = rememberedEmail
-    form.value.remember = true
-  }
-})
-
 </script>
 
 <template>
@@ -123,52 +124,28 @@ onMounted(() => {
     </div>
   </a>
 
-  <VRow
-    no-gutters
-    class="auth-wrapper"
-  >
-    <VCol
-      md="8"
-      class="d-none d-md-flex align-center justify-center position-relative"
-    >
+  <VRow no-gutters class="auth-wrapper">
+    <VCol md="8" class="d-none d-md-flex align-center justify-center position-relative">
       <div class="d-flex align-center justify-center pa-10">
-        <img
-          :src="authV2LoginIllustration"
-          class="auth-illustration w-100"
-          alt="auth-illustration"
-        >
+        <img :src="authV2LoginIllustration" class="auth-illustration w-100" alt="auth-illustration">
       </div>
-      <VImg
-        :src="authV2LoginMask"
-        class="d-none d-md-flex auth-footer-mask"
-        alt="auth-mask"
-      />
+      <VImg :src="authV2LoginMask" class="d-none d-md-flex auth-footer-mask" alt="auth-mask" />
     </VCol>
-    <VCol
-      cols="12"
-      md="4"
-      class="auth-card-v2 d-flex align-center justify-center"
-      style="background-color: rgb(var(--v-theme-surface));"
-    >
-      <VCard
-        flat
-        :max-width="500"
-        class="mt-12 mt-sm-0 pa-5 pa-lg-7"
-      >
+    
+    <VCol cols="12" md="4" class="auth-card-v2 d-flex align-center justify-center" style="background-color: rgb(var(--v-theme-surface));">
+      <VCard flat :max-width="500" class="mt-12 mt-sm-0 pa-5 pa-lg-7">
         <VCardText>
           <h4 class="text-h4 mb-1">
-            Welcome to <span class="text-capitalize">{{ themeConfig.app.title }}! 👋🏻</span>
+            Create Your Account 🚀
           </h4>
-
           <p class="mb-0">
-            Please sign-in to your account and start the adventure
+            Start your journey with us today
           </p>
         </VCardText>
 
         <VCardText>
-          <VForm @submit.prevent="login">
+          <VForm @submit.prevent="register">
             <VRow>
-
               <!-- Error messages -->
               <VCol v-if="errors.length" cols="12">
                 <VAlert
@@ -182,7 +159,7 @@ onMounted(() => {
                 </VAlert>
               </VCol>
 
-              <!-- email -->
+              <!-- Email -->
               <VCol cols="12">
                 <VTextField
                   v-model="form.email"
@@ -195,7 +172,7 @@ onMounted(() => {
                 />
               </VCol>
 
-              <!-- password -->
+              <!-- Password -->
               <VCol cols="12">
                 <VTextField
                   v-model="form.password"
@@ -207,64 +184,60 @@ onMounted(() => {
                   :error-messages="errors.find(e => e.field === 'password')?.message"
                   :disabled="isLoading"
                 />
+              </VCol>
 
-                <!-- remember me checkbox -->
-                <div class="d-flex align-center justify-space-between flex-wrap my-6 gap-x-2">
-                  <VCheckbox
-                    v-model="form.remember"
-                    label="Remember me"
-                    :disabled="isLoading"
-                  />
+              <!-- Confirm Password -->
+              <VCol cols="12">
+                <VTextField
+                  v-model="form.confirmPassword"
+                  label="Confirm Password"
+                  placeholder="············"
+                  :type="isConfirmPasswordVisible ? 'text' : 'password'"
+                  :append-inner-icon="isConfirmPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
+                  @click:append-inner="isConfirmPasswordVisible = !isConfirmPasswordVisible"
+                  :error-messages="errors.find(e => e.field === 'confirmPassword')?.message"
+                  :disabled="isLoading"
+                />
+              </VCol>
 
-                  <a
-                    class="text-primary"
-                    href="javascript:void(0)"
-                  >
-                    Forgot Password?
-                  </a>
-                </div>
-
-                <!-- login button -->
+              <!-- Terms -->
+              <VCol cols="12">
+                <VCheckbox
+                  v-model="form.terms"
+                  label="I agree to the Terms and Conditions"
+                  :error-messages="errors.find(e => e.field === 'terms')?.message"
+                  :disabled="isLoading"
+                />
+                
                 <VBtn
                   block
                   type="submit"
                   :loading="isLoading"
                   :disabled="isLoading"
                 >
-                  Login
+                  Register
                 </VBtn>
               </VCol>
 
-              <!-- create account -->
-              <VCol
-                cols="12"
-                class="text-body-1 text-center"
-              >
+              <VCol cols="12" class="text-body-1 text-center">
                 <span class="d-inline-block">
-                  New on our platform?
+                  Already have an account?
                 </span>
                 <RouterLink
-                  to="/register"
+                  to="/login"
                   class="text-primary ms-1 d-inline-block text-body-1"
                 >
-                  Create an account
+                  Sign in instead
                 </RouterLink>
               </VCol>
 
-              <VCol
-                cols="12"
-                class="d-flex align-center"
-              >
+              <VCol cols="12" class="d-flex align-center">
                 <VDivider />
                 <span class="mx-4 text-high-emphasis">or</span>
                 <VDivider />
               </VCol>
 
-              <!-- auth providers -->
-              <VCol
-                cols="12"
-                class="text-center"
-              >
+              <VCol cols="12" class="text-center">
                 <AuthProvider />
               </VCol>
             </VRow>
