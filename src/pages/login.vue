@@ -9,6 +9,7 @@ import authV2LoginMaskDark from '@images/pages/auth-v2-login-mask-dark.png'
 import authV2LoginMaskLight from '@images/pages/auth-v2-login-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
+import { useAuthStore } from '@/@core/stores/auth'
 
 definePage({
   meta: {
@@ -42,6 +43,7 @@ const authV2LoginMask = useGenerateImageVariant(authV2LoginMaskLight, authV2Logi
 const authV2LoginIllustration = useGenerateImageVariant (authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 const authService = {
   async login(email: string, password: string) {
@@ -87,12 +89,12 @@ const login = async () => {
   errors.value = []
   
   try {
-    const response = await authService.login(form.value.email, form.value.password)
-    
-    localStorage.setItem('authToken', response.token)
+    await authStore.login(form.value.email, form.value.password)
     
     if (form.value.remember) {
-      localStorage.setItem('rememberedEmail', form.value.email)
+      authStore.setRememberedEmail(form.value.email)
+    } else {
+      authStore.setRememberedEmail(null)
     }
     
     router.push('/dashboard')
@@ -104,9 +106,8 @@ const login = async () => {
 }
 
 onMounted(() => {
-  const rememberedEmail = localStorage.getItem('rememberedEmail')
-  if (rememberedEmail) {
-    form.value.email = rememberedEmail
+  if (authStore.rememberedEmail) {
+    form.value.email = authStore.rememberedEmail
     form.value.remember = true
   }
 })

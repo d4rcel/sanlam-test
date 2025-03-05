@@ -10,6 +10,7 @@ import authV2LoginMaskDark from '@images/pages/auth-v2-login-mask-dark.png'
 import authV2LoginMaskLight from '@images/pages/auth-v2-login-mask-light.png'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
+import { useAuthStore } from '@/@core/stores/auth'
 
 definePage({
   meta: {
@@ -47,6 +48,7 @@ const authV2LoginMask = useGenerateImageVariant(authV2LoginMaskLight, authV2Logi
 const authV2LoginIllustration = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 const authService = {
   async register(email: string, password: string) {
@@ -103,8 +105,7 @@ const register = async () => {
   errors.value = []
   
   try {
-    const response = await authService.register(form.value.email, form.value.password)
-    localStorage.setItem('authToken', response.token)
+    await authStore.register(form.value.email, form.value.password)
     router.push('/dashboard')
   } catch (error) {
     errors.value.push({ message: error instanceof Error ? error.message : 'An error occurred' })
