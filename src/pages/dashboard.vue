@@ -1,3 +1,17 @@
+<script setup lang="ts">
+import { useAuthStore } from '@/@core/stores/auth'
+
+definePage({
+  meta: {
+    requiresAuth: true, // This marks the route as protected
+  },
+})
+
+const authStore = useAuthStore()
+
+const userEmail = computed(() => authStore.token ? authStore.users.find(u => u.email)?.email : 'Guest')
+</script>
+
 <template>
   <div>
     <VCard title="Dashboard">
@@ -11,7 +25,7 @@
     </VDivider>
 
     <VDivider>
-      <RouterLink to="/login" class="text-primary ms-1 d-inline-block text-body-1">
+      <RouterLink to="/" class="text-primary ms-1 d-inline-block text-body-1">
         Go to login to test if registered user can login
       </RouterLink>
     </VDivider>

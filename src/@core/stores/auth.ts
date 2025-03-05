@@ -62,6 +62,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Getters
   const isAuthenticated = () => !!token.value
+  const tokenValue = () => token.value
 
   return {
     token,
@@ -72,5 +73,6 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     setRememberedEmail,
     isAuthenticated,
+    tokenValue
   }
 })

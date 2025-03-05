@@ -4,27 +4,22 @@ import type { App } from 'vue'
 import type { RouteRecordRaw } from 'vue-router/auto'
 
 import { createRouter, createWebHistory } from 'vue-router/auto'
+import { useAuthStore } from '@/@core/stores/auth'
 
-const routes: RouteRecordRaw[] = [
-  {
-    path: '/login',
-    name: 'login',
-    component: () => import('@/pages/login.vue'),
-    meta: { layout: 'blank', public: true }
-  },
-  {
-    path: '/register',
-    name: 'register',
-    component: () => import('@/pages/register.vue'),
-    meta: { layout: 'blank', public: true }
-  },
-  {
-    path: '/dashboard',
-    name: 'dashboard',
-    component: () => import('@/pages/dashboard.vue'),
-    meta: { requiresAuth: true }
-  }
-]
+// const routes: RouteRecordRaw[] = [
+//   {
+//     path: '/login',
+//     name: 'login',
+//     component: () => import('@/pages/login.vue'),
+//     meta: { layout: 'blank', public: true }
+//   },
+//   {
+//     path: '/register',
+//     name: 'register',
+//     component: () => import('@/pages/register.vue'),
+//     meta: { layout: 'blank', public: true }
+//   }
+// ]
 
 function recursiveLayouts(route: RouteRecordRaw): RouteRecordRaw {
   if (route.children) {
@@ -51,15 +46,26 @@ const router = createRouter({
   ],
 })
 
+// Navigation guard
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem('authToken')
+  const authStore = useAuthStore()
+  const isAuthenticated = authStore.isAuthenticated()
+
+  console.log("TOKEN VALUE", authStore.tokenValue());
+
+  // console.log("authStore", authStore.tokenValue);
   
+
+  // Check if route requires authentication and user is not authenticated
   if (to.meta.requiresAuth && !isAuthenticated) {
-    next({ name: 'login' })
-  } else if ((to.name === 'login' || to.name === 'register') && isAuthenticated) {
-    next({ name: 'dashboard' })
-  } else {
-    next()
+    next({ name: 'login', query: { redirect: to.fullPath } }) // Redirect to login with return URL
+  } 
+  // Prevent logged-in users from accessing login/register
+  else if ((to.name === 'login' || to.name === 'register') && isAuthenticated) {
+    next({ name: 'dashboard' }) // Redirect authenticated users to dashboard
+  } 
+  else {
+    next() // Proceed normally
   }
 })
 

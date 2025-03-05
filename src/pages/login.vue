@@ -43,6 +43,7 @@ const authV2LoginMask = useGenerateImageVariant(authV2LoginMaskLight, authV2Logi
 const authV2LoginIllustration = useGenerateImageVariant (authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
 
 const router = useRouter()
+const route = useRoute()
 const authStore = useAuthStore()
 
 const authService = {
@@ -97,7 +98,9 @@ const login = async () => {
       authStore.setRememberedEmail(null)
     }
     
-    router.push('/dashboard')
+    const redirect = route.query.redirect as string || '/dashboard'
+    
+    router.push(redirect)
   } catch (error) {
     errors.value.push({ message: error instanceof Error ? error.message : 'An error occurred' })
   } finally {
