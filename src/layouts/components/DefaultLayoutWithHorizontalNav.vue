@@ -10,6 +10,7 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
 import NavBarI18n from '@core/components/I18n.vue'
 import { HorizontalNavLayout } from '@layouts'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
+import ActionsButton from './ActionsButton.vue'
 </script>
 
 <template>
@@ -34,6 +35,7 @@ import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
       />
 
       <NavbarThemeSwitcher class="me-2" />
+      <ActionsButton />
       <UserProfile />
     </template>
 

@@ -11,6 +11,7 @@ import NavBarI18n from '@core/components/I18n.vue'
 
 // @layouts plugin
 import { VerticalNavLayout } from '@layouts'
+import ActionsButton from './ActionsButton.vue'
 
 const configStore = useConfigStore()
 
@@ -49,6 +50,7 @@ watch([
           v-if="themeConfig.app.i18n.enable && themeConfig.app.i18n.langConfig?.length"
           :languages="themeConfig.app.i18n.langConfig"
         />
+        <ActionsButton />
         <UserProfile />
       </div>
     </template>

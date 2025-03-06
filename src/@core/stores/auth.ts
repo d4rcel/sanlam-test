@@ -11,6 +11,7 @@ interface AuthState {
   token: string | null
   users: User[]
   rememberedEmail: string | null
+  currentUserEmail: string | null
 }
 
 export const useAuthStore = defineStore('auth', () => {
@@ -18,6 +19,7 @@ export const useAuthStore = defineStore('auth', () => {
   const token = cookieRef<string | null>('authToken', null)
   const rememberedEmail = cookieRef<string | null>('rememberedEmail', null)
   const users = ref<User[]>([])
+  const currentUserEmail = ref<string | null>(null)
 
   const generateToken = () => {
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -39,6 +41,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     users.value.push({ email, password })
     token.value = generateToken()
+    currentUserEmail.value = email
   }
 
   const login = async (email: string, password: string) => {
@@ -48,12 +51,14 @@ export const useAuthStore = defineStore('auth', () => {
     }
     
     token.value = generateToken()
+    currentUserEmail.value = email
     return { user: { email }, token: token.value }
   }
 
   const logout = () => {
     token.value = null
     rememberedEmail.value = null
+    currentUserEmail.value = null
   }
 
   const setRememberedEmail = (email: string | null) => {
@@ -68,6 +73,7 @@ export const useAuthStore = defineStore('auth', () => {
     token,
     users,
     rememberedEmail,
+    currentUserEmail,
     register,
     login,
     logout,

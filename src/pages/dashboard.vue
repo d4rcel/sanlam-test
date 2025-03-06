@@ -9,16 +9,24 @@ definePage({
 
 const authStore = useAuthStore()
 
-const userEmail = computed(() => authStore.token ? authStore.users.find(u => u.email)?.email : 'Guest')
+const userEmail = computed(() => authStore.currentUserEmail || 'Guest')
 </script>
+
 
 <template>
   <div>
-    <VCard title="Dashboard">
-      <VCardText>Welcome to your dashboard!</VCardText>
+    <p>Welcome, {{ userEmail || 'User' }}!</p>
+    <VCard title="Create Awesome 🙌">
+      <VCardText>This is your second page.</VCardText>
+      <VCardText>
+        Chocolate sesame snaps pie carrot cake pastry pie lollipop muffin.
+        Carrot cake dragée chupa chups jujubes. Macaroon liquorice cookie
+        wafer tart marzipan bonbon. Gingerbread jelly-o dragée
+        chocolate.
+      </VCardText>
     </VCard>
 
-    <VDivider>
+    <!-- <VDivider>
       <RouterLink to="/register" class="text-primary ms-1 d-inline-block text-body-1">
         Go to register to test if we can register again
       </RouterLink>
@@ -28,6 +36,6 @@ const userEmail = computed(() => authStore.token ? authStore.users.find(u => u.e
       <RouterLink to="/" class="text-primary ms-1 d-inline-block text-body-1">
         Go to login to test if registered user can login
       </RouterLink>
-    </VDivider>
+    </VDivider> -->
   </div>
 </template>
