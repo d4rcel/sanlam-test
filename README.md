@@ -1,36 +1,51 @@
-# vue
+Ce projet intègre un système d'authentification utilisateur. Il comprend la connexion, l'inscription et un tableau de bord protégé, utilisant TypeScript, Vuetify, Pinia, et le routage automatique. Les fonctionnalités clés incluent la validation des formulaires, la gestion de sessions, et des éléments d'interface dynamiques selon l'état d'authentification.
 
-This template should help get you started developing with Vue 3 in Vite.
 
-## Recommended IDE Setup
+## Fonctionnalités
 
-[VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) (and disable Vetur).
+    - Connexion : Connexion par email/mot de passe avec fonction "Se souvenir de moi".
+    - Inscription : Inscription utilisateur avec validation email, mot de passe et termes.
+    - Tableau de Bord : Page protégée accessible après authentification.
+    - Boutons Auth : Boutons dynamiques "Login/Sign Up" ou "Logout".
+    - Gestion de Session : email "Se souvenir de moi" persistant.
 
-## Type Support for `.vue` Imports in TS
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates.
+## Prérequis
 
-However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can run `Volar: Switch TS Plugin on/off` from VS Code command palette.
+    - Node.js (v16+ recommandé)
+    - npm (v8+ recommandé)
 
-## Customize configuration
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+## Cloner le projet
 
-## Project Setup
+```sh
+git clone https://github.com/d4rcel/sanlam-test.git ou git clone git@github.com:d4rcel/sanlam-test.git si vous utiliser ssh
+```
+
+## Installer les dépendances
 
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### Lancer le serveur de développement
 
 ```sh
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+## Utilisation
 
-```sh
-npm run build
-```
-# sanlam-test
+    - Accéder à l'application sur http://localhost:5173 (port Vite par défaut).
+    - Inscrire un nouvel utilisateur à /register.
+    - Se connecter à /login.
+    - Voir le tableau de bord protégé à /dashboard.
+    - Utiliser le bouton "Logout" pour se déconnecter.
+
+## Structure du Projet
+
+    - src/pages/ : login.vue, register.vue, dashboard.vue (pages à routage automatique).
+    - src/@core/stores/auth.ts : Magasin Pinia pour l'état d'authentification.
+    - src/layouts/components/AuthButtons.vue : Boutons d'authentification dynamiques.
+    - src/router/index.ts : Routeur avec gardes de navigation.
+
