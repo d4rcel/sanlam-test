@@ -16,7 +16,7 @@ interface AuthState {
 
 export const useAuthStore = defineStore('auth', () => {
   // State
-  const token = cookieRef<string | null>('authToken', null)
+  const token = ref<string | null>(null)
   const rememberedEmail = cookieRef<string | null>('rememberedEmail', null)
   const users = ref<User[]>([])
   const currentUserEmail = ref<string | null>(null)
