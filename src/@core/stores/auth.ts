@@ -57,7 +57,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const logout = () => {
     token.value = null
-    rememberedEmail.value = null
+    // rememberedEmail.value = null
     currentUserEmail.value = null
   }
 
