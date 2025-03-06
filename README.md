@@ -46,6 +46,6 @@ npm run dev
 
     - src/pages/ : login.vue, register.vue, dashboard.vue (pages à routage automatique).
     - src/@core/stores/auth.ts : Magasin Pinia pour l'état d'authentification.
-    - src/layouts/components/AuthButtons.vue : Boutons d'authentification dynamiques.
+    - src/layouts/components/ActionsButtons.vue : Boutons d'authentification dynamiques.
     - src/router/index.ts : Routeur avec gardes de navigation.
 
